@@ -14,3 +14,5 @@ __pycache__/
 # Node (for frontend later)
 node_modules/
 dist/
+
+CLAUDE.md/
