@@ -15,4 +15,5 @@ __pycache__/
 node_modules/
 dist/
 
-CLAUDE.md/
+CLAUDE.md
+Deployment.md
