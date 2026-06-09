@@ -1,7 +1,7 @@
 import resend
-from .config import Settings
+from .config import settings
 
-resend.api_key = Settings.RESEND_API_KEY
+resend.api_key = settings.RESEND_API_KEY
 
 def send_invite_email_to_add_user(email: str, code: str, role: str):
     resend.Emails.send({

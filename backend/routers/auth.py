@@ -13,7 +13,7 @@ from schemas.auth import SignupRequest, LoginRequest, Token, InviteRequest
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-@router.post("/invite", response_mode=dict)
+@router.post("/invite", response_model=dict)
 def invite(data: InviteRequest, db: Session = Depends(get_db), _: str = Depends(get_current_admin)):
     code = secrets.token_hex(4).upper()
 
@@ -31,7 +31,7 @@ def invite(data: InviteRequest, db: Session = Depends(get_db), _: str = Depends(
     return {"message": f"Invite sent to {data.email}"}
 
 
-@router.post("/signup", response_mode=Token)
+@router.post("/signup", response_model=Token)
 def signup(data: SignupRequest, db: Session = Depends(get_db)):
 
     invite = db.query(InviteCode).filter(InviteCode.code==data.invite_code).first()
@@ -63,7 +63,7 @@ def signup(data: SignupRequest, db: Session = Depends(get_db)):
     return Token(access_token=token)
 
 
-@router.post("/login", response_mode=dict)
+@router.post("/login", response_model=dict)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(data.username == User.username).first()
@@ -76,7 +76,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 
 # if no user exists
-@router.post("/setup", response_mode=Token)
+@router.post("/setup", response_model=Token)
 def setup(data: SignupRequest, db: Session = Depends(get_db)):
     
     if db.query(User).first():
