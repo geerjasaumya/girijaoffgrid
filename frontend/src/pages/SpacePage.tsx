@@ -23,7 +23,7 @@ interface Post {
   title: string
   body: string | null
   tags: string | null
-  links: LinkItem[] | null    // ← add this
+  links: LinkItem[] | null
   created_at: string
   media_items: MediaItem[]
 }
@@ -76,11 +76,10 @@ export default function SpacePage() {
     setEditTitle(post.title)
     setEditBody(post.body || '')
     setEditTags(post.tags || '')
+    setEditLinks(post.links || [])
   }
 
-  const cancelEditing = () => {
-    setEditingPostId(null)
-  }
+  const cancelEditing = () => setEditingPostId(null)
 
   const handleUpdatePost = async (postId: number) => {
     try {
@@ -97,17 +96,13 @@ export default function SpacePage() {
     }
   }
 
-
   const addEditLink = () => setEditLinks([...editLinks, { title: '', url: '' }])
-
   const removeEditLink = (index: number) => setEditLinks(editLinks.filter((_, i) => i !== index))
-
   const updateEditLink = (index: number, field: 'title' | 'url', value: string) => {
     const updated = [...editLinks]
     updated[index][field] = value
     setEditLinks(updated)
   }
-
 
   const handleDeleteMedia = async (postId: number, mediaId: number) => {
     if (!confirm('Delete this media item?')) return
@@ -119,231 +114,263 @@ export default function SpacePage() {
     }
   }
 
-
   useEffect(() => {
     fetchSpace()
   }, [slug])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-400">Loading...</p>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1B2A4A' }}>
+      <p style={{ color: '#8BA4C8' }}>Loading...</p>
     </div>
   )
 
   if (error || !space) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-red-500">{error || 'Space not found'}</p>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1B2A4A' }}>
+      <p style={{ color: '#E07070' }}>{error || 'Space not found'}</p>
     </div>
   )
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
-      {space.cover_image_url && (
-        <img
-          src={space.cover_image_url}
-          alt={space.name}
-          className="w-full h-48 object-cover rounded-xl mb-8"
-        />
-      )}
+    <div style={{ backgroundColor: '#1B2A4A', minHeight: '100vh' }}>
+      <div className="max-w-4xl mx-auto px-6 py-12">
 
-      <div className="mb-10">
-        <div className="flex items-center gap-3">
-          {space.icon && <span className="text-4xl">{space.icon}</span>}
-          <h1 className="text-3xl font-bold">{space.name}</h1>
+        {/* Cover image */}
+        {space.cover_image_url && (
+          <img
+            src={space.cover_image_url}
+            alt={space.name}
+            className="w-full h-48 object-cover rounded-2xl mb-8"
+          />
+        )}
+
+        {/* Space header */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3">
+            {space.icon && <span className="text-4xl">{space.icon}</span>}
+            <h1 className="text-3xl font-bold" style={{ color: '#F5F0E8' }}>
+              {space.name}
+            </h1>
+          </div>
+          {space.description && (
+            <p className="mt-2 text-base font-light" style={{ color: '#C4D4E8' }}>
+              {space.description}
+            </p>
+          )}
         </div>
-        {space.description && (
-          <p className="text-gray-500 mt-2">{space.description}</p>
-        )}
-      </div>
 
-      <div className="flex flex-col gap-8">
-        {isAdmin && (
-          <PostForm slug={slug!} onPostCreated={fetchSpace} />
-        )}
+        {/* Posts */}
+        <div className="flex flex-col gap-6">
+          {isAdmin && (
+            <PostForm slug={slug!} onPostCreated={fetchSpace} />
+          )}
 
-        {space.posts.length === 0 ? (
-          <p className="text-gray-400">Nothing here yet.</p>
-        ) : (
-          space.posts.map((post) => (
-            <div key={post.id} className="border border-gray-200 rounded-xl p-6">
-              {editingPostId === post.id ? (
-                <div className="flex flex-col gap-3">
-                  <input
-                    type="text"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                  <textarea
-                    value={editBody}
-                    onChange={(e) => setEditBody(e.target.value)}
-                    rows={4}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    value={editTags}
-                    onChange={(e) => setEditTags(e.target.value)}
-                    placeholder="tags, comma, separated"
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  />
+          {space.posts.length === 0 ? (
+            <p style={{ color: '#8BA4C8' }}>Nothing here yet.</p>
+          ) : (
+            space.posts.map((post) => (
+              <div
+                key={post.id}
+                className="rounded-2xl p-6"
+                style={{ backgroundColor: '#F5F0E8', border: '1px solid #DDD6C8' }}
+              >
+                {editingPostId === post.id ? (
+                  // EDIT MODE
+                  <div className="flex flex-col gap-3">
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className="rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                      style={{ border: '1px solid #DDD6C8', backgroundColor: '#EDE8DC', color: '#1B2A4A'}}
+                    />
+                    <textarea
+                      value={editBody}
+                      onChange={(e) => setEditBody(e.target.value)}
+                      rows={4}
+                      className="rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                      style={{ border: '1px solid #DDD6C8', backgroundColor: '#EDE8DC', color: '#1B2A4A' }}
+                    />
+                    <input
+                      type="text"
+                      value={editTags}
+                      onChange={(e) => setEditTags(e.target.value)}
+                      placeholder="tags, comma, separated"
+                      className="rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                      style={{ border: '1px solid #DDD6C8', backgroundColor: '#EDE8DC', color: '#1B2A4A' }}
+                    />
 
-                  {/* Links editing */}
-                  <div className="flex flex-col gap-2">
-                    {editLinks.map((link, index) => (
-                      <div key={index} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={link.title}
-                          onChange={(e) => updateEditLink(index, 'title', e.target.value)}
-                          placeholder="Link title"
-                          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black flex-1"
-                        />
-                        <input
-                          type="url"
-                          value={link.url}
-                          onChange={(e) => updateEditLink(index, 'url', e.target.value)}
-                          placeholder="https://..."
-                          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black flex-1"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeEditLink(index)}
-                          className="text-red-400 hover:text-red-600 text-sm px-2"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addEditLink}
-                      className="text-xs text-gray-500 hover:text-black text-left"
-                    >
-                      + Add link
-                    </button>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleUpdatePost(post.id)}
-                      className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={cancelEditing}
-                      className="text-sm text-gray-500 px-4 py-2 hover:text-black"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-start justify-between">
-                    <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                    {isAdmin && (
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => startEditing(post)}
-                          className="text-xs text-gray-400 hover:text-black transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeletePost(post.id)}
-                          className="text-xs text-red-400 hover:text-red-600 transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {post.tags && (
-                    <div className="flex gap-2 mb-4 flex-wrap">
-                      {post.tags.split(',').map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
-                        >
-                          {tag.trim()}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {post.body && (
-                    <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
-                      {post.body}
-                    </p>
-                  )}
-
-                  {post.links && post.links.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {post.links.map((link, index) => (
-                        <a
-                          key={index}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 hover:border-gray-400 hover:text-black transition-colors"
-                        >
-                          🔗 {link.title}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-
-                  {post.media_items.length > 0 && (
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      {post.media_items.map((item) => (
-                        <div key={item.id} className="relative">
-                          {item.media_type === 'image' && (
-                            <img
-                              src={item.url}
-                              alt={item.caption || ''}
-                              className="w-full rounded-lg object-cover"
-                            />
-                          )}
-                          {item.media_type === 'video' && (
-                            <video src={item.url} controls className="w-full rounded-lg" />
-                          )}
-                          {item.media_type === 'audio' && (
-                            <audio src={item.url} controls className="w-full" />
-                          )}
-                          {item.caption && (
-                            <p className="text-xs text-gray-400 mt-1">{item.caption}</p>
-                          )}
-                          {isAdmin && (
-                            <button
-                              onClick={() => handleDeleteMedia(post.id, item.id)}
-                              className="absolute top-2 right-2 bg-white/90 text-red-500 text-xs px-2 py-1 rounded-md hover:bg-white hover:text-red-700 transition-colors"
-                            >
-                              Delete
-                            </button>
-                          )}
+                    {/* Links editing */}
+                    <div className="flex flex-col gap-2">
+                      {editLinks.map((link, index) => (
+                        <div key={index} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={link.title}
+                            onChange={(e) => updateEditLink(index, 'title', e.target.value)}
+                            placeholder="Link title"
+                            className="rounded-lg px-3 py-2 text-sm focus:outline-none flex-1"
+                            style={{ border: '1px solid #DDD6C8', backgroundColor: '#EDE8DC', color: '#1B2A4A' }}
+                          />
+                          <input
+                            type="url"
+                            value={link.url}
+                            onChange={(e) => updateEditLink(index, 'url', e.target.value)}
+                            placeholder="https://..."
+                            className="rounded-lg px-3 py-2 text-sm focus:outline-none flex-1"
+                            style={{ border: '1px solid #DDD6C8', backgroundColor: '#EDE8DC', color: '#1B2A4A' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeEditLink(index)}
+                            className="text-sm px-2"
+                            style={{ color: '#8B2020' }}
+                          >
+                            ✕
+                          </button>
                         </div>
                       ))}
+                      <button
+                        type="button"
+                        onClick={addEditLink}
+                        className="text-xs text-left"
+                        style={{ color: '#3D5A8A' }}
+                      >
+                        + Add link
+                      </button>
                     </div>
-                  )}
 
-                  <p className="text-xs text-gray-400 mt-4">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </p>
-                  {isAdmin && (
-                    <MediaUploader
-                      slug={slug!}
-                      postId={post.id}
-                      onUploaded={fetchSpace}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          ))
-        )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleUpdatePost(post.id)}
+                        className="px-4 py-2 rounded-lg text-sm font-medium"
+                        style={{ backgroundColor: '#1B2A4A', color: '#F5F0E8' }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        className="text-sm px-4 py-2"
+                        style={{ color: '#3D5A8A' }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // VIEW MODE
+                  <>
+                    <div className="flex items-start justify-between mb-3">
+                      <h2 className="text-xl font-semibold" style={{ color: '#1B2A4A' }}>
+                        {post.title}
+                      </h2>
+                      {isAdmin && (
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => startEditing(post)}
+                            className="text-xs font-medium"
+                            style={{ color: '#3D5A8A' }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="text-xs font-medium"
+                            style={{ color: '#8B2020' }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {post.tags && (
+                      <div className="flex gap-2 mb-4 flex-wrap">
+                        {post.tags.split(',').map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-xs px-2 py-1 rounded-full font-medium"
+                            style={{ backgroundColor: '#DDD6C8', color: '#1B2A4A' }}
+                          >
+                            {tag.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {post.body && (
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap mb-4" style={{ color: '#4A5F7A' }}>
+                        {post.body}
+                      </p>
+                    )}
+
+                    {post.links && post.links.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {post.links.map((link, index) => (
+                          <a
+                            key={index}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                            style={{ border: '1px solid #DDD6C8', color: '#1B2A4A', backgroundColor: '#EDE8DC' }}
+                          >
+                            🔗 {link.title}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
+                    {post.media_items.length > 0 && (
+                      <div className="mt-4 grid grid-cols-2 gap-3">
+                        {post.media_items.map((item) => (
+                          <div key={item.id} className="relative">
+                            {item.media_type === 'image' && (
+                              <img
+                                src={item.url}
+                                alt={item.caption || ''}
+                                className="w-full rounded-xl object-cover"
+                              />
+                            )}
+                            {item.media_type === 'video' && (
+                              <video src={item.url} controls className="w-full rounded-xl" />
+                            )}
+                            {item.media_type === 'audio' && (
+                              <audio src={item.url} controls className="w-full" />
+                            )}
+                            {item.caption && (
+                              <p className="text-xs mt-1" style={{ color: '#3D5A8A' }}>{item.caption}</p>
+                            )}
+                            {isAdmin && (
+                              <button
+                                onClick={() => handleDeleteMedia(post.id, item.id)}
+                                className="absolute top-2 right-2 text-xs px-2 py-1 rounded-md"
+                                style={{ backgroundColor: 'rgba(245,240,232,0.95)', color: '#8B2020' }}
+                              >
+                                Delete
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="text-xs mt-4" style={{ color: '#8BA4C8' }}>
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </p>
+
+                    {isAdmin && (
+                      <MediaUploader
+                        slug={slug!}
+                        postId={post.id}
+                        onUploaded={fetchSpace}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )
