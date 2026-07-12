@@ -21,7 +21,7 @@ def list_spaces(db: Session = Depends(get_db)):
 @router.get("/{slug}", response_model=SpaceWithPosts)
 def get_space(slug: str, db: Session = Depends(get_db)):
     """Public - get a single space with all it's posts"""
-    space = db.query(SpaceWithPosts).filter(Space.slug == slug).first()
+    space = db.query(Space).filter(Space.slug == slug).first()
     if not space:
         raise HTTPException(status_code=404, detail="Space not Found")
     return space
@@ -32,13 +32,13 @@ def create_space(data: SpaceCreate, db: Session = Depends(get_db), _: str = Depe
     """Admin only — create a new space."""
     existing = db.query(Space).filter(Space.slug == data.slug).first()
     if existing:
-        raise HTTPException(status_code=403, detail="Admin user already exists")
-    sapce = Space(**data.model_dump())
+        raise HTTPException(status_code=400, detail=f"Slug '{data.slug}' already exists")
+    space = Space(**data.model_dump())
     
-    db.add(sapce)
+    db.add(space)
     db.commit()
-    db.refresh(sapce)
-    return sapce
+    db.refresh(space)
+    return space
 
 
 @router.patch("/{slug}", response_model=SpaceOut)
@@ -47,14 +47,14 @@ def update_space(slug: str, data: SpaceUpdate, db: Session = Depends(get_db), _:
     space = db.query(Space).filter(Space.slug == slug).first()
     if not space:
         raise HTTPException(status_code=404, detail="Space not found")
-    for field, value in data.model_dump(exclued_none=True).items():
+    for field, value in data.model_dump(exclude_none=True).items():
         setattr(space, field, value)
     db.commit()
     db.refresh(space)
     return space
 
 
-@router.delete("/{slug}/cover", response_model=SpaceOut)
+@router.post("/{slug}/cover", response_model=SpaceOut)
 async def upload_cover_image(slug: str, file: UploadFile = File(...), db: Session = Depends(get_db), _: str = Depends(get_current_admin)):
     """Admin only — upload or replace the space cover image."""
     space = db.query(Space).filter(Space.slug == slug).first()

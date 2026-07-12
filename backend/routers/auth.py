@@ -63,7 +63,7 @@ def signup(data: SignupRequest, db: Session = Depends(get_db)):
     return Token(access_token=token)
 
 
-@router.post("/login", response_model=dict)
+@router.post("/login", response_model=Token)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(data.username == User.username).first()
@@ -89,9 +89,9 @@ def setup(data: SignupRequest, db: Session = Depends(get_db)):
         role="admin",
     )
 
-    db.add(User)
+    db.add(user)
     db.commit()
     db.refresh(user)
 
-    token = create_access_token({"sub": User.username})
+    token = create_access_token({"sub": user.username})
     return Token(access_token=token)
