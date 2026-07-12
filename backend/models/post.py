@@ -15,6 +15,7 @@ class Post(Base):
     order = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    links = Column(Text, nullable=True)  # JSON string: [{"title": "GitHub", "url": "https://..."}]
 
     space = relationship("Space", back_populates="posts")
     media_items = relationship("MediaItem", back_populates="post", cascade="all, delete-orphan")
