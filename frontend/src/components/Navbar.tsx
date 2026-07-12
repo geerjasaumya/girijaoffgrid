@@ -11,34 +11,24 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b border-gray-200 px-6 py-4">
+    <nav style={{ backgroundColor: '#F5F0E8', borderBottom: '1px solid #DDD6C8' }} className="px-6 py-4">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
-        <Link to="/" className="font-bold text-lg tracking-tight">
+        <Link to="/" className="text-lg font-semibold" style={{ color: '#1B2A4A' }}>
           girijaoffgrid
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           {isAdmin ? (
             <>
-              <Link
-                to="/admin"
-                className="text-sm text-gray-600 hover:text-black transition-colors"
-              >
+              <Link to="/admin" className="text-sm font-medium" style={{ color: '#1B2A4A' }}>
                 Admin
               </Link>
-              {/* <span className="text-sm text-gray-500">admin</span> */}
-              <button
-                onClick={handleLogout}
-                className="text-sm text-gray-600 hover:text-black transition-colors"
-              >
+              <button onClick={handleLogout} className="text-sm font-medium" style={{ color: '#3D5A8A' }}>
                 Logout
               </button>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="text-sm text-gray-600 hover:text-black transition-colors"
-            >
+            <Link to="/login" className="text-sm font-medium" style={{ color: '#1B2A4A' }}>
               Login
             </Link>
           )}
