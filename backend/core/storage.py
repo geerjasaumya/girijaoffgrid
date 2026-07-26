@@ -1,17 +1,12 @@
-import boto3
 import uuid
 import mimetypes
 from pathlib import Path
 from fastapi import UploadFile, HTTPException
+from google.cloud import storage
 from .config import settings
 
-s3_client = boto3.client(
-    "s3",
-    endpoint_url=f"https://{settings.R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
-    aws_access_key_id=settings.R2_ACCESS_KEY_ID,
-    aws_secret_access_key=settings.R2_SECRET_ACCESS_KEY,
-    region_name="auto",
-)
+storage_client = storage.Client()
+bucket = storage_client.bucket(settings.GCS_BUCKET_NAME)
 
 ALLOWED_TYPES = {
     "image": ["image/jpeg", "image/png", "image/webp", "image/gif"],
@@ -38,33 +33,25 @@ async def upload_file(file: UploadFile, space_slug: str) -> dict:
     media_type = _detect_media_type(content_type)
 
     if not media_type:
-        raise HTTPException(
-            status_code=400,
-            detail=f"File type '{content_type}' not allowed."
-        )
+        raise HTTPException(status_code=400, detail=f"File type '{content_type}' not allowed.")
 
     contents = await file.read()
     size_mb = len(contents) / (1024 * 1024)
     max_mb = MAX_FILE_SIZE_MB[media_type]
 
     if size_mb > max_mb:
-        raise HTTPException(
-            status_code=400,
-            detail=f"{media_type.capitalize()} too large: {size_mb:.1f}MB. Max is {max_mb}MB."
-        )
+        raise HTTPException(status_code=400, detail=f"{media_type.capitalize()} too large: {size_mb:.1f}MB. Max is {max_mb}MB.")
 
     ext = Path(file.filename).suffix.lower()
     key = f"{space_slug}/{media_type}/{uuid.uuid4().hex}{ext}"
 
-    s3_client.put_object(
-        Bucket=settings.R2_BUCKET_NAME,
-        Key=key,
-        Body=contents,
-        ContentType=content_type,
-    )
+    blob = bucket.blob(key)
+    blob.upload_from_string(contents, content_type=content_type)
+
+    public_url = f"{settings.GCS_PUBLIC_URL.rstrip('/')}/{key}"
 
     return {
-        "url": f"{settings.R2_PUBLIC_URL.rstrip('/')}/{key}",
+        "url": public_url,
         "key": key,
         "media_type": media_type,
         "mime_type": content_type,
@@ -74,6 +61,7 @@ async def upload_file(file: UploadFile, space_slug: str) -> dict:
 
 def delete_file(key: str) -> None:
     try:
-        s3_client.delete_object(Bucket=settings.R2_BUCKET_NAME, Key=key)
+        blob = bucket.blob(key)
+        blob.delete()
     except Exception as e:
-        print(f"Warning: could not delete R2 object '{key}': {e}")
+        print(f"Warning: could not delete GCS object '{key}': {e}")
