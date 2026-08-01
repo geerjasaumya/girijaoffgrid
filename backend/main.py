@@ -14,6 +14,8 @@ app.add_middleware(
     allow_origins = [
         "http://localhost:5173",    # Vite dev server
         "https://girijaoffgrid.com",
+        "https://girijaoffgrid.web.app",
+        "https://www.girijaoffgrid.com",
     ],
     allow_credentials = True,
     allow_methods = ["*"],
