@@ -39,86 +39,116 @@ export default function Admin() {
     }
   }
 
+  const inputStyle = {
+    backgroundColor: '#F5F0E8',
+    border: '1px solid #DDD6C8',
+    color: '#1B2A4A',
+    borderRadius: '8px',
+    padding: '8px 12px',
+    fontSize: '14px',
+    width: '100%',
+    outline: 'none',
+  }
+
+  const labelStyle = {
+    fontSize: '13px',
+    fontWeight: '500',
+    color: '#F5F0E8',
+    display: 'block',
+    marginBottom: '4px',
+  }
+
   return (
-    <div className="max-w-xl mx-auto px-6 py-12">
-      <h1 className="text-2xl font-bold mb-8">Create a new space</h1>
+    <div style={{ backgroundColor: '#1B2A4A', minHeight: '100vh' }}>
+      <div className="max-w-xl mx-auto px-6 py-12">
+        <h1 className="text-2xl font-bold mb-8" style={{ color: '#F5F0E8' }}>
+          Create a new space
+        </h1>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-50 text-green-600 text-sm p-3 rounded-lg mb-4">
-          {success}
-        </div>
-      )}
+        {error && (
+          <div className="text-sm p-3 rounded-lg mb-4" style={{ backgroundColor: '#3D1515', color: '#F5A0A0' }}>
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="text-sm p-3 rounded-lg mb-4" style={{ backgroundColor: '#1A3D1A', color: '#A0F5A0' }}>
+            {success}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div>
-          <label className="text-sm font-medium text-gray-700">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Coding Space"
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div>
+            <label style={labelStyle}>Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Coding Space"
+              style={inputStyle}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="text-sm font-medium text-gray-700">Slug</label>
-          <input
-            type="text"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
-            placeholder="coding"
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-            required
-          />
-          <p className="text-xs text-gray-400 mt-1">
-            This becomes the URL: /spaces/{slug || '...'}
-          </p>
-        </div>
+          <div>
+            <label style={labelStyle}>Slug</label>
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+              placeholder="coding"
+              style={inputStyle}
+              required
+            />
+            <p className="text-xs mt-1" style={{ color: '#8BA4C8' }}>
+              This becomes the URL: /spaces/{slug || '...'}
+            </p>
+          </div>
 
-        <div>
-          <label className="text-sm font-medium text-gray-700">Icon (emoji)</label>
-          <input
-            type="text"
-            value={icon}
-            onChange={(e) => setIcon(e.target.value)}
-            placeholder="💻"
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+          <div>
+            <label style={labelStyle}>Icon (emoji)</label>
+            <input
+              type="text"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="💻"
+              style={inputStyle}
+            />
+          </div>
 
-        <div>
-          <label className="text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="My DSA learning and dev knowledge"
-            rows={3}
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+          <div>
+            <label style={labelStyle}>Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="My DSA learning and dev knowledge"
+              rows={3}
+              style={{ ...inputStyle, resize: 'vertical' }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="py-2 rounded-lg text-sm font-medium"
+            style={{
+              backgroundColor: '#F5F0E8',
+              color: '#1B2A4A',
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {loading ? 'Creating...' : 'Create Space'}
+          </button>
+        </form>
 
         <button
-          type="submit"
-          disabled={loading}
-          className="bg-black text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+          onClick={() => navigate('/')}
+          className="text-sm mt-6"
+          style={{ color: '#8BA4C8' }}
         >
-          {loading ? 'Creating...' : 'Create Space'}
+          ← Back home
         </button>
-      </form>
-
-      <button
-        onClick={() => navigate('/')}
-        className="text-sm text-gray-500 mt-6 hover:text-black"
-      >
-        ← Back home
-      </button>
+      </div>
     </div>
   )
 }
