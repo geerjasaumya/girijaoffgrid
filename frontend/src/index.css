@@ -8,3 +8,22 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+.dark-input {
+  background-color: #243556;
+  border: 1px solid #3D5A8A;
+  color: #C4D4E8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+}
+
+.dark-input::placeholder {
+  color: #8BA4C8;
+}
+
+.dark-input:focus {
+  border-color: #A8C4E0;
+}
