@@ -20,14 +20,8 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
   const [loading, setLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
-  const addLink = () => {
-    setLinks([...links, { title: '', url: '' }])
-  }
-
-  const removeLink = (index: number) => {
-    setLinks(links.filter((_, i) => i !== index))
-  }
-
+  const addLink = () => setLinks([...links, { title: '', url: '' }])
+  const removeLink = (index: number) => setLinks(links.filter((_, i) => i !== index))
   const updateLink = (index: number, field: 'title' | 'url', value: string) => {
     const updated = [...links]
     updated[index][field] = value
@@ -64,7 +58,8 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="border border-dashed border-gray-300 rounded-xl p-4 text-sm text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors w-full text-center"
+        className="rounded-2xl p-4 text-sm w-full text-center transition-colors"
+        style={{ border: '1px dashed #3D5A8A', color: '#C4D4E8' }}
       >
         + New post
       </button>
@@ -72,11 +67,11 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6">
-      <h3 className="font-semibold mb-4">New post</h3>
+    <div className="rounded-2xl p-6" style={{ border: '1px solid #3D5A8A' }}>
+      <h3 className="font-semibold mb-4" style={{ color: '#F5F0E8' }}>New post</h3>
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">
+        <div className="text-sm p-3 rounded-lg mb-4" style={{ backgroundColor: '#3D1515', color: '#F5A0A0' }}>
           {error}
         </div>
       )}
@@ -87,7 +82,7 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="dark-input"
           required
         />
         <textarea
@@ -95,17 +90,16 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
           onChange={(e) => setBody(e.target.value)}
           placeholder="Write something..."
           rows={4}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="dark-input"
         />
         <input
           type="text"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="tags, comma, separated"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="dark-input"
         />
 
-        {/* Links */}
         <div className="flex flex-col gap-2">
           {links.map((link, index) => (
             <div key={index} className="flex gap-2">
@@ -114,19 +108,20 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
                 value={link.title}
                 onChange={(e) => updateLink(index, 'title', e.target.value)}
                 placeholder="Link title (e.g. GitHub)"
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black flex-1"
+                className="dark-input flex-1"
               />
               <input
                 type="url"
                 value={link.url}
                 onChange={(e) => updateLink(index, 'url', e.target.value)}
                 placeholder="https://..."
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black flex-1"
+                className="dark-input flex-1"
               />
               <button
                 type="button"
                 onClick={() => removeLink(index)}
-                className="text-red-400 hover:text-red-600 text-sm px-2"
+                className="text-sm px-2"
+                style={{ color: '#F5A0A0' }}
               >
                 ✕
               </button>
@@ -135,7 +130,8 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
           <button
             type="button"
             onClick={addLink}
-            className="text-xs text-gray-500 hover:text-black text-left"
+            className="text-xs text-left"
+            style={{ color: '#8BA4C8' }}
           >
             + Add link
           </button>
@@ -145,14 +141,16 @@ export default function PostForm({ slug, onPostCreated }: PostFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ backgroundColor: '#F5F0E8', color: '#1B2A4A', opacity: loading ? 0.6 : 1 }}
           >
             {loading ? 'Posting...' : 'Post'}
           </button>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="text-sm text-gray-500 px-4 py-2 hover:text-black"
+            className="text-sm px-4 py-2"
+            style={{ color: '#8BA4C8' }}
           >
             Cancel
           </button>
